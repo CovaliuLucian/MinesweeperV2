@@ -2,7 +2,7 @@
 {
     public class Tile
     {
-        public TileState TileState { get; set; } = TileState.Unknown;
+        public TileState TileState { get; set; } = TileState.Known; //TODO
         public TileValue TileValue { get; set; } = TileValue.Empty;
 
         public Tile(TileValue tileValue)

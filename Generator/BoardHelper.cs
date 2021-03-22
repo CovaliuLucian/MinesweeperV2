@@ -16,5 +16,10 @@ namespace Generator
                 .Where(tile => tile != null && tile.TileValue != TileValue.Bomb)
                 .ToList();
         }
+
+        public static string ToValue(this TileValue tileValue)
+        {
+            return ((int) tileValue).ToString();
+        }
     }
 }

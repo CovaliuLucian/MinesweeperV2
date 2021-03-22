@@ -6,27 +6,27 @@ using SFML.Window;
 
 namespace MinesweeperUI
 {
-    class Runner
+    public class Runner
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             Console.WriteLine("Initializing...");
             var window = new RenderWindow(new VideoMode(500, 600), "Minesweeper", Styles.Close | Styles.Titlebar);
-            var testShape = new CircleShape(100)
-            {
-                FillColor = Color.Cyan
-            };
 
-            window.RegisterEvents();
+            var board = GameStateGenerator.GenerateBoard(Difficulty.Beginner); 
+            var shapeManager = new ShapeManager(board); 
 
-            var board = GameStateGenerator.GenerateBoard(Difficulty.Beginner);
+            window.RegisterEvents(board);
 
             Console.WriteLine(board.ToString());
 
             while (window.IsOpen)
             {
                 window.Clear();
-                window.Draw(testShape);
+                foreach (var drawable in shapeManager.AllDrawables)
+                {
+                    window.Draw(drawable);
+                }
                 window.Display();
 
                 window.WaitAndDispatchEvents();

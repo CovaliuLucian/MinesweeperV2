@@ -14,4 +14,10 @@
     <ProjectReference Include="..\Generator\Generator.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="ARIAL.TTF">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
