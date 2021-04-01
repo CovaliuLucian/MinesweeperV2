@@ -8,10 +8,12 @@ namespace GameState
     {
         public int BoardSize { get; }
         private readonly Tile[,] tiles;
+        public GameState GameState { get; set; }
 
         public Board(int boardSize)
         {
             BoardSize = boardSize;
+            GameState = GameState.Pause;
             tiles = new Tile[boardSize, boardSize];
 
             for (var i = 0; i < boardSize; i++)
@@ -53,6 +55,7 @@ namespace GameState
         {
             return CoordinatesAreValid(point) ? tiles[point.X, point.Y] : null;
         }
+
         public void SetTile(Point point, Tile tile)
         {
             if (!CoordinatesAreValid(point))

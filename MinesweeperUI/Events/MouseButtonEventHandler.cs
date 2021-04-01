@@ -9,10 +9,12 @@ namespace MinesweeperUI.Events
     public class MouseButtonEventHandler : BaseEventHandler
     {
         private readonly Board board;
+        private readonly ShapeManager shapeManager;
 
-        public MouseButtonEventHandler(RenderWindow window, Board board) : base(window)
+        public MouseButtonEventHandler(RenderWindow window, Board board, ShapeManager shapeManager) : base(window)
         {
             this.board = board;
+            this.shapeManager = shapeManager;
         }
 
         protected override void HandleEvent(RenderWindow window, EventArgs args)
@@ -22,10 +24,36 @@ namespace MinesweeperUI.Events
                 Console.WriteLine($"{mouseArgs.X} {mouseArgs.Y}");
 
                 var increment = 490f / board.BoardSize;
-                var point = new Point(mouseArgs.X, mouseArgs.Y - 105);
+                var point = Revert(new Point(Floor(mouseArgs.X / increment), Floor((mouseArgs.Y - 105) / increment)));
 
-                Console.WriteLine($"{Math.Floor(point.X / increment)} {Math.Floor(point.Y / increment)}");
+                Console.WriteLine($"Clicked on: {point.X} {point.Y}");
+
+                if (point.X < 0 || point.Y < 0)
+                {
+                    Console.WriteLine("Click outside of play area.");
+                    return;
+                }
+
+                if (mouseArgs.Button == Mouse.Button.Left)
+                {
+                    shapeManager.ShouldUpdate = GameEventManager.ClickedOnTile(point);
+                }
+
+                if (mouseArgs.Button == Mouse.Button.Right)
+                {
+                    shapeManager.ShouldUpdate = GameEventManager.FlagOnTile(point);
+                }
             }
+        }
+
+        private static int Floor(double number)
+        {
+            return Convert.ToInt32(Math.Floor(number));
+        }
+
+        private static Point Revert(Point point)
+        {
+            return new Point(point.Y, point.X);
         }
     }
 }

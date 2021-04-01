@@ -2,7 +2,7 @@
 {
     public class Tile
     {
-        public TileState TileState { get; set; } = TileState.Known; //TODO
+        public TileState TileState { get; set; } = TileState.Unknown;
         public TileValue TileValue { get; set; } = TileValue.Empty;
 
         public Tile(TileValue tileValue)
@@ -23,6 +23,11 @@
                 TileValue = TileValue
             };
         }
+
+        public bool IsNumber => TileValue != TileValue.Bomb && TileValue != TileValue.Empty;
+
+        public bool ShouldRenderText =>
+            TileState == TileState.Known && IsNumber;
 
         public override string ToString()
         {

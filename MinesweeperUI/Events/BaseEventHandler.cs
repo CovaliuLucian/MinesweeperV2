@@ -1,4 +1,5 @@
 ﻿using System;
+using GameState;
 using SFML.Graphics;
 
 namespace MinesweeperUI.Events

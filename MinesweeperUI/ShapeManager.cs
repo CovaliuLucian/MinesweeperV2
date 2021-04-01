@@ -11,13 +11,16 @@ namespace MinesweeperUI
 {
     public class ShapeManager
     {
+        private readonly Board board;
         private static readonly Vector2f RectangleSize = new Vector2f(200, 99);
         private static readonly Vector2f ResetSize = new Vector2f(100, 99);
 
-        public Drawable ScoreRectangle { get; }
-        public Drawable TimeRectangle { get; }
-        public Drawable ResetRectangle { get; }
-        public Dictionary<Point, Drawable> Squares { get; set; }
+        public Drawable ScoreRectangle { get; private set; }
+        public Drawable TimeRectangle { get; private set; }
+        public Drawable ResetRectangle { get; private set; }
+        public Dictionary<Point, Drawable> Squares { get; private set; }
+
+        public bool ShouldUpdate = true;
 
         public IEnumerable<Drawable> AllDrawables
         {
@@ -31,10 +34,21 @@ namespace MinesweeperUI
 
         public ShapeManager(Board board)
         {
+            this.board = board;
             ScoreRectangle = GetScoreRectangle();
             TimeRectangle = GetTimeRectangle();
             ResetRectangle = GetResetRectangle();
-            Squares = GetTileRectangles(board);
+            Update();
+        }
+
+        public void Update()
+        {
+            if (ShouldUpdate)
+            {
+                Squares = GetTileRectangles();
+            }
+
+            ShouldUpdate = false;
         }
 
         private Drawable GetScoreRectangle()
@@ -67,7 +81,7 @@ namespace MinesweeperUI
             };
         }
 
-        private Dictionary<Point, Drawable> GetTileRectangles(Board board)
+        private Dictionary<Point, Drawable> GetTileRectangles()
         {
             var toDraw = new Dictionary<Point, Drawable>();
             var increment = 490f / board.BoardSize;
@@ -87,8 +101,7 @@ namespace MinesweeperUI
                     };
                     var tile = board.GetTile(new Point(j, i));
 
-                    if (tile.TileState == TileState.Known && tile.TileValue != TileValue.Bomb &&
-                        tile.TileValue != TileValue.Empty) // TODO
+                    if (tile.ShouldRenderText)
                     {
                         var text = new Text(tile.TileValue.ToValue(), new Font("ARIAL.TTF"))
                         {
@@ -100,7 +113,7 @@ namespace MinesweeperUI
                     }
                     else
                     {
-                        toDraw.Add(new Point(i, j), new TileSquare(square));
+                        toDraw.Add(new Point(i, j), new TileSquare(square, tile.TileState));
                     }
                 }
             }
