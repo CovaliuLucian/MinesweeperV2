@@ -10,8 +10,7 @@ namespace Generator
         public static void GenerateBoard(Board board, Point pointToAvoid)
         {
             var mines = RandomHelper.GetRandomPoints(board.Mines, board.BoardSize, pointToAvoid);
-            board.Pristine = false;
-
+            
             foreach (var point in mines)
             {
                 board.SetTile(point, BombTile);

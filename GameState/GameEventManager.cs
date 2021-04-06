@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Linq;
 
 namespace GameState
 {
@@ -33,7 +34,7 @@ namespace GameState
             }
         }
 
-        public static bool ClickedOnTile(Point target)
+        public static bool ClickedOnTile(Point target) //TODO refactor
         {
             board.TimeKeeper.Start();
 
@@ -41,21 +42,34 @@ namespace GameState
 
             switch (tile.TileState)
             {
-                case TileState.Unknown:
-                    tile.TileState = TileState.Known;
-                    break;
-                case TileState.Flag:
                 case TileState.Known:
+                    return false;
+                case TileState.Unknown:
+                {
+                    tile.TileState = TileState.Known;
+                    if (CheckIfWin())
+                    {
+                        board.GameState = GameState.Win;
+                        return true;
+                    }
+                    break;
+                }
+                case TileState.Flag:
                     return false;
             }
 
-            if (tile.IsNumber) 
+            if (tile.IsNumber)
                 return true;
 
             if (tile.TileValue == TileValue.Empty)
             {
                 tile.TileState = TileState.Unknown;
                 Filler.Fill(board, target);
+                if (CheckIfWin())
+                {
+                    board.GameState = GameState.Win;
+                    return true;
+                }
             }
 
             if (tile.TileValue == TileValue.Bomb)
@@ -66,6 +80,23 @@ namespace GameState
             return true;
         }
 
+        private static bool CheckIfWin()
+        {
+            var mines = board.GetAllTiles().Where(t => t.TileValue == TileValue.Bomb);
+            if (mines.All(t => t.TileState == TileState.Flag) && board.FlagsLeft == 0)
+            {
+                return true;
+            }
+
+            var notMines = board.GetAllTiles().Where(t => t.TileValue != TileValue.Bomb);
+            if (notMines.All(t => t.TileState == TileState.Known))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
         public static bool FlagOnTile(Point target)
         {
             var tile = board.GetTile(target);
@@ -74,6 +105,12 @@ namespace GameState
                 case TileState.Unknown:
                     tile.TileState = TileState.Flag;
                     board.FlagsLeft--;
+                    if (CheckIfWin())
+                    {
+                        board.GameState = GameState.Win;
+                        return true;
+                    }
+
                     return true;
                 case TileState.Known:
                     return false;

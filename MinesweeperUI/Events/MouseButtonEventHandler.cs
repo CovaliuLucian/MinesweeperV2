@@ -47,6 +47,8 @@ namespace MinesweeperUI.Events
                     if (board.Pristine)
                     {
                         GameStateGenerator.GenerateBoard(board, point);
+                        board.Pristine = false;
+                        board.GameState = GameState.GameState.Running;
                     }
 
                     shapeManager.ShouldUpdate = GameEventManager.ClickedOnTile(point);
