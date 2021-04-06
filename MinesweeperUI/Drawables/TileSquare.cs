@@ -1,7 +1,7 @@
 ﻿using GameState;
 using SFML.Graphics;
 
-namespace MinesweeperUI
+namespace MinesweeperUI.Drawables
 {
     public class TileSquare : Drawable
     {

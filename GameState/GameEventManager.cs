@@ -32,6 +32,8 @@ namespace GameState
 
         public static bool ClickedOnTile(Point target)
         {
+            board.TimeKeeper.Start();
+
             var tile = board.GetTile(target);
 
             switch (tile.TileState)
@@ -68,11 +70,13 @@ namespace GameState
             {
                 case TileState.Unknown:
                     tile.TileState = TileState.Flag;
+                    board.FlagsLeft--;
                     return true;
                 case TileState.Known:
                     return false;
                 case TileState.Flag:
                     tile.TileState = TileState.Unknown;
+                    board.FlagsLeft++;
                     return true;
                 default:
                     return false;

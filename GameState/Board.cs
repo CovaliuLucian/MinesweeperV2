@@ -7,20 +7,27 @@ namespace GameState
     public class Board
     {
         public int BoardSize { get; }
-        private readonly Tile[,] tiles;
         public GameState GameState { get; set; }
+        public int FlagsLeft { get; set; }
+        public TimeKeeper TimeKeeper { get; }
+
+
+        private readonly Tile[,] tiles;
 
         public Board(int boardSize)
         {
+            FlagsLeft = 10;
+            TimeKeeper = new TimeKeeper();
             BoardSize = boardSize;
             GameState = GameState.Pause;
+
             tiles = new Tile[boardSize, boardSize];
 
             for (var i = 0; i < boardSize; i++)
             {
                 for (var j = 0; j < boardSize; j++)
                 {
-                    tiles[i,j] = new Tile();
+                    tiles[i, j] = new Tile();
                 }
             }
         }
@@ -46,7 +53,7 @@ namespace GameState
             {
                 for (var j = 0; j < BoardSize; j++)
                 {
-                    yield return tiles[i,j];
+                    yield return tiles[i, j];
                 }
             }
         }

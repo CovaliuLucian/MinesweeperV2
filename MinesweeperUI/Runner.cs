@@ -1,8 +1,8 @@
-﻿using System;
-using GameState;
+﻿using GameState;
 using Generator;
 using SFML.Graphics;
 using SFML.Window;
+using System;
 
 namespace MinesweeperUI
 {
@@ -12,10 +12,11 @@ namespace MinesweeperUI
         {
             Console.WriteLine("Initializing...");
             var window = new RenderWindow(new VideoMode(500, 600), "Minesweeper", Styles.Close | Styles.Titlebar);
+            window.SetFramerateLimit(30);
 
-            var board = GameStateGenerator.GenerateBoard(Difficulty.Beginner); 
+            var board = GameStateGenerator.GenerateBoard(Difficulty.Beginner);
             GameEventManager.Init(board);
-            var shapeManager = new ShapeManager(board); 
+            var shapeManager = new ShapeManager(board);
 
             window.RegisterEvents(board, shapeManager);
 
@@ -24,6 +25,7 @@ namespace MinesweeperUI
             while (window.IsOpen)
             {
                 window.Clear();
+
                 shapeManager.Update();
 
                 foreach (var drawable in shapeManager.AllDrawables)
@@ -35,7 +37,7 @@ namespace MinesweeperUI
 
                 window.Display();
 
-                window.WaitAndDispatchEvents();
+                window.DispatchEvents();
             }
         }
     }

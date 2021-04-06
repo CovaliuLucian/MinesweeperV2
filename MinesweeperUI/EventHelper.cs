@@ -13,6 +13,7 @@ namespace MinesweeperUI
 
             var mouseButtonEventHandler = new MouseButtonEventHandler(window, board, shapeManager);
             window.MouseButtonPressed += mouseButtonEventHandler.HandleEvent;
+            
         }
     }
 }

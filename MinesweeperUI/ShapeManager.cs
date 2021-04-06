@@ -1,10 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using GameState;
+﻿using GameState;
 using Generator;
+using MinesweeperUI.Drawables;
 using SFML.Graphics;
 using SFML.System;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
 using Color = SFML.Graphics.Color;
 
 namespace MinesweeperUI
@@ -15,18 +16,20 @@ namespace MinesweeperUI
         private static readonly Vector2f RectangleSize = new Vector2f(200, 99);
         private static readonly Vector2f ResetSize = new Vector2f(100, 99);
 
-        public Drawable ScoreRectangle { get; private set; }
-        public Drawable TimeRectangle { get; private set; }
+        public TextRectangle FlagsRectangle { get; private set; }
+        public TextRectangle TimeRectangle { get; private set; }
         public Drawable ResetRectangle { get; private set; }
         public Dictionary<Point, Drawable> Squares { get; private set; }
 
         public bool ShouldUpdate = true;
 
+        private static readonly Font Font = new Font("ARIAL.TTF");
+
         public IEnumerable<Drawable> AllDrawables
         {
             get
             {
-                var list = new List<Drawable> {ScoreRectangle, TimeRectangle, ResetRectangle};
+                var list = new List<Drawable> {FlagsRectangle, TimeRectangle, ResetRectangle};
                 list.AddRange(Squares.Values);
                 return list;
             }
@@ -35,40 +38,62 @@ namespace MinesweeperUI
         public ShapeManager(Board board)
         {
             this.board = board;
-            ScoreRectangle = GetScoreRectangle();
             TimeRectangle = GetTimeRectangle();
-            ResetRectangle = GetResetRectangle();
             Update();
         }
 
         public void Update()
         {
+            UpdateTime();
             if (ShouldUpdate)
             {
                 Squares = GetTileRectangles();
+                FlagsRectangle = GetFlagsRectangle();
+                ResetRectangle = GetResetRectangle();
             }
 
             ShouldUpdate = false;
         }
 
-        private Drawable GetScoreRectangle()
+        private void UpdateTime()
         {
-            return new RectangleShape(RectangleSize)
+            TimeRectangle?.UpdateText(board.TimeKeeper.GetTime().ToScoreString());
+        }
+
+        private TextRectangle GetFlagsRectangle()
+        {
+            var rectangle = new RectangleShape(RectangleSize)
             {
                 FillColor = Color.Red,
                 Position = new Vector2f(1, 1),
                 OutlineThickness = .5f
             };
+            var text = new Text(board.FlagsLeft.ToScoreString(), Font)
+            {
+                CharacterSize = 75,
+                Position = new Vector2f(25, 1),
+                FillColor = Color.White,
+                LetterSpacing = 3
+            };
+            return new TextRectangle(rectangle, text);
         }
 
-        private Drawable GetTimeRectangle()
+        private TextRectangle GetTimeRectangle()
         {
-            return new RectangleShape(RectangleSize)
+            var rectangle = new RectangleShape(RectangleSize)
             {
                 FillColor = Color.Red,
                 Position = new Vector2f(300, 1),
                 OutlineThickness = .5f
             };
+            var text = new Text(board.TimeKeeper.GetTime().ToScoreString(), Font)
+            {
+                CharacterSize = 75,
+                Position = new Vector2f(325, 1),
+                FillColor = Color.White, 
+                LetterSpacing = 3
+            };
+            return new TextRectangle(rectangle, text);
         }
 
         private Drawable GetResetRectangle()
@@ -92,6 +117,8 @@ namespace MinesweeperUI
             {
                 for (var j = 0; j < board.BoardSize; j++)
                 {
+                    var justEmpty = true;
+
                     var position = new Vector2f(5 + i * increment, 105 + j * increment);
                     var square = new RectangleShape(new Vector2f(increment, increment))
                     {
@@ -103,15 +130,23 @@ namespace MinesweeperUI
 
                     if (tile.ShouldRenderText)
                     {
-                        var text = new Text(tile.TileValue.ToValue(), new Font("ARIAL.TTF"))
+                        var text = new Text(tile.TileValue.ToValue(), Font)
                         {
                             CharacterSize = 40,
                             Position = new Vector2f(5 + i * increment + .3f * increment, 105 + j * increment),
                             FillColor = Color.Red
                         };
-                        toDraw.Add(new Point(i + 50, j + 50), new TileSquare(square, text));
+                        toDraw.Add(new Point(i, j), new TileSquare(square, text));
+                        justEmpty = false;
                     }
-                    else
+
+                    if (tile.TileState == TileState.Flag)
+                    {
+                        toDraw.Add(new Point(i, j), new TileFlag(square));
+                        justEmpty = false;
+                    }
+
+                    if (justEmpty)
                     {
                         toDraw.Add(new Point(i, j), new TileSquare(square, tile.TileState));
                     }
