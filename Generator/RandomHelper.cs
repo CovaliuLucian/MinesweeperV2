@@ -9,6 +9,24 @@ namespace Generator
     {
         private static readonly Random Random = new Random(Guid.NewGuid().GetHashCode());
 
+        public static List<Point> GetRandomPoints(int count, int max, Point? except)
+        {
+            var points = new List<Point>();
+
+            while (points.Count() < count)
+            {
+                var newPoints = GetRandomPoints(count - points.Count, max);
+                points.AddRange(newPoints);
+                points = points.Distinct().ToList();
+                if (except.HasValue)
+                {
+                    points.RemoveAll(x => x.Equals(except.Value));
+                }
+            }
+
+            return points;
+        }
+
         public static List<Point> GetRandomPoints(int count, int max)
         {
             var points = new List<Point>();
@@ -17,16 +35,7 @@ namespace Generator
                 points.Add(new Point(Random.Next(max), Random.Next(max)));
             }
 
-            var distinct = points.Distinct().ToList();
-
-            while (distinct.Count() < count)
-            {
-                var newPoints = GetRandomPoints(count - distinct.Count, max);
-                points.AddRange(newPoints);
-                distinct = points.Distinct().ToList();
-            }
-
-            return distinct;
+            return points;
         }
     }
 }

@@ -12,22 +12,25 @@ namespace GameState
             GameEventManager.board = board;
         }
 
-        public static bool CheckGameState()
+        public static GameState CheckGameState()
         {
-            if (board.GameState == GameState.Win)
+            switch (board.GameState)
             {
-                Console.WriteLine("You Won!");
-                board.GameState = GameState.Pause;
+                case GameState.Win:
+                    Console.WriteLine("You Won!");
+                    board.GameState = GameState.Pause;
+                    return GameState.Win;
+                case GameState.Lose:
+                    Console.WriteLine("You Lost!");
+                    board.GameState = GameState.Pause;
+                    return GameState.Lose;
+                case GameState.Reset:
+                    board.GameState = GameState.Pause;
+                    return GameState.Reset;
+                default:
+                    //TODO
+                    return GameState.Running;
             }
-
-            if (board.GameState == GameState.Lose)
-            {
-                Console.WriteLine("You Lost!");
-                board.GameState = GameState.Pause;
-            }
-
-            //TODO
-            return false;
         }
 
         public static bool ClickedOnTile(Point target)
@@ -81,6 +84,12 @@ namespace GameState
                 default:
                     return false;
             }
+        }
+
+        public static bool ClickedOnReset()
+        {
+            board.GameState = GameState.Reset;
+            return true;
         }
     }
 }

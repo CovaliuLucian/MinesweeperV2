@@ -25,6 +25,7 @@
         }
 
         public bool IsNumber => TileValue != TileValue.Bomb && TileValue != TileValue.Empty;
+        public bool IsBomb => TileValue == TileValue.Bomb && TileState != TileState.Flag;
 
         public bool ShouldRenderText =>
             TileState == TileState.Known && IsNumber;

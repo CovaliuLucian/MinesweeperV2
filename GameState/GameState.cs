@@ -5,6 +5,7 @@
         Pause,
         Running,
         Win,
-        Lose
+        Lose,
+        Reset
     }
 }

@@ -6,6 +6,7 @@ using SFML.System;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using MinesweeperUI.Resources;
 using Color = SFML.Graphics.Color;
 
 namespace MinesweeperUI
@@ -18,12 +19,10 @@ namespace MinesweeperUI
 
         public TextRectangle FlagsRectangle { get; private set; }
         public TextRectangle TimeRectangle { get; private set; }
-        public Drawable ResetRectangle { get; private set; }
+        public ResetRectangle ResetRectangle { get; private set; }
         public Dictionary<Point, Drawable> Squares { get; private set; }
 
         public bool ShouldUpdate = true;
-
-        private static readonly Font Font = new Font("ARIAL.TTF");
 
         public IEnumerable<Drawable> AllDrawables
         {
@@ -68,7 +67,7 @@ namespace MinesweeperUI
                 Position = new Vector2f(1, 1),
                 OutlineThickness = .5f
             };
-            var text = new Text(board.FlagsLeft.ToScoreString(), Font)
+            var text = new Text(board.FlagsLeft.ToScoreString(), ResourceManager.Font)
             {
                 CharacterSize = 75,
                 Position = new Vector2f(25, 1),
@@ -86,24 +85,25 @@ namespace MinesweeperUI
                 Position = new Vector2f(300, 1),
                 OutlineThickness = .5f
             };
-            var text = new Text(board.TimeKeeper.GetTime().ToScoreString(), Font)
+            var text = new Text(board.TimeKeeper.GetTime().ToScoreString(), ResourceManager.Font)
             {
                 CharacterSize = 75,
                 Position = new Vector2f(325, 1),
-                FillColor = Color.White, 
+                FillColor = Color.White,
                 LetterSpacing = 3
             };
             return new TextRectangle(rectangle, text);
         }
 
-        private Drawable GetResetRectangle()
+        private ResetRectangle GetResetRectangle()
         {
-            return new RectangleShape(ResetSize)
-            {
-                FillColor = Color.Green,
-                Position = new Vector2f(200, 1),
-                OutlineThickness = .5f
-            };
+            return new ResetRectangle(
+                new RectangleShape(ResetSize)
+                {
+                    FillColor = Color.White,
+                    Position = new Vector2f(200, 1),
+                    OutlineThickness = .5f
+                }, board.GameState);
         }
 
         private Dictionary<Point, Drawable> GetTileRectangles()
@@ -130,7 +130,7 @@ namespace MinesweeperUI
 
                     if (tile.ShouldRenderText)
                     {
-                        var text = new Text(tile.TileValue.ToValue(), Font)
+                        var text = new Text(tile.TileValue.ToValue(), ResourceManager.Font)
                         {
                             CharacterSize = 40,
                             Position = new Vector2f(5 + i * increment + .3f * increment, 105 + j * increment),
@@ -143,6 +143,12 @@ namespace MinesweeperUI
                     if (tile.TileState == TileState.Flag)
                     {
                         toDraw.Add(new Point(i, j), new TileFlag(square));
+                        justEmpty = false;
+                    }
+
+                    if (board.GameState == GameState.GameState.Lose && tile.IsBomb)
+                    {
+                        toDraw.Add(new Point(i, j), new TileBomb(square));
                         justEmpty = false;
                     }
 

@@ -7,6 +7,8 @@ namespace GameState
     public class Board
     {
         public int BoardSize { get; }
+        public int Mines { get; }
+        public bool Pristine { get; set; } = true;
         public GameState GameState { get; set; }
         public int FlagsLeft { get; set; }
         public TimeKeeper TimeKeeper { get; }
@@ -14,11 +16,12 @@ namespace GameState
 
         private readonly Tile[,] tiles;
 
-        public Board(int boardSize)
+        public Board(int boardSize, int mines)
         {
             FlagsLeft = 10;
             TimeKeeper = new TimeKeeper();
             BoardSize = boardSize;
+            Mines = mines;
             GameState = GameState.Pause;
 
             tiles = new Tile[boardSize, boardSize];

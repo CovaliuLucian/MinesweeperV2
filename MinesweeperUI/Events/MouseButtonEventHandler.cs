@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using GameState;
+using Generator;
 using SFML.Graphics;
 using SFML.Window;
 
@@ -28,6 +29,13 @@ namespace MinesweeperUI.Events
 
                 Console.WriteLine($"Clicked on: {point.X} {point.Y}");
 
+                if (shapeManager.ResetRectangle.Rectangle.ToFloatRect().Contains(mouseArgs.X, mouseArgs.Y))
+                {
+                    Console.WriteLine("Click on reset button");
+                    shapeManager.ShouldUpdate = GameEventManager.ClickedOnReset();
+                    return;
+                }
+
                 if (point.X < 0 || point.Y < 0)
                 {
                     Console.WriteLine("Click outside of play area.");
@@ -36,6 +44,11 @@ namespace MinesweeperUI.Events
 
                 if (mouseArgs.Button == Mouse.Button.Left)
                 {
+                    if (board.Pristine)
+                    {
+                        GameStateGenerator.GenerateBoard(board, point);
+                    }
+
                     shapeManager.ShouldUpdate = GameEventManager.ClickedOnTile(point);
                 }
 

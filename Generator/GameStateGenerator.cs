@@ -1,17 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
 using GameState;
 
 namespace Generator
 {
     public static class GameStateGenerator
     {
-        public static Board GenerateBoard(Difficulty difficulty)
+        public static void GenerateBoard(Board board, Point pointToAvoid)
         {
-            var gameSize = gameSizes[difficulty];
-
-            var board = new Board(gameSize.BoardSize);
-
-            var mines = RandomHelper.GetRandomPoints(gameSize.Mines, gameSize.BoardSize);
+            var mines = RandomHelper.GetRandomPoints(board.Mines, board.BoardSize, pointToAvoid);
+            board.Pristine = false;
 
             foreach (var point in mines)
             {
@@ -23,7 +22,13 @@ namespace Generator
                 }
             }
 
-            return board;
+            Console.WriteLine(board);
+        }
+
+        public static Board GenerateEmptyBoard(Difficulty difficulty)
+        {
+            var gameSize = gameSizes[difficulty];
+            return new Board(gameSize.BoardSize, gameSize.Mines);
         }
 
         private class GameSize

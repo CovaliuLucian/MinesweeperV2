@@ -1,35 +1,12 @@
-﻿using SFML.Graphics;
+﻿using MinesweeperUI.Resources;
+using SFML.Graphics;
 
 namespace MinesweeperUI.Drawables
 {
-    public class TileFlag : Drawable
+    public class TileFlag : TileImage
     {
-        private static readonly Image Flag;
-        public RectangleShape Square { get; set; }
-        public Sprite FlagSprite { get; set; }
-
-        static TileFlag()
+        public TileFlag(RectangleShape square) : base(square, ResourceManager.Flag)
         {
-            Flag = new Image("flag.png");
-        }
-
-        public TileFlag(RectangleShape square)
-        {
-            Square = square;
-            FlagSprite = new Sprite(new Texture(Flag))
-            {
-                Position = Square.Position,
-                Origin = Square.Origin
-            };
-            // the texture is a square
-            var scale = Square.Size / FlagSprite.TextureRect.Height;
-            FlagSprite.Scale = scale;
-        }
-
-        public void Draw(RenderTarget target, RenderStates states)
-        {
-            target.Draw(Square);
-            target.Draw(FlagSprite);
         }
     }
 }
